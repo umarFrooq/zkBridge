@@ -1,0 +1,32 @@
+{
+  "deviceIP": "192.168.1.100",
+  "devicePort": 4370,
+  "deviceTimeout": 5000,
+  "hrmServer": {
+    "baseURL": "https://your-hrm-server.com/api",
+    "apiKey": "your-api-key-here",
+    "endpoints": {
+      "attendance": "/attendance",
+      "employees": "/employees",
+      "sync": "/sync"
+    },
+    "timeout": 10000,
+    "retryAttempts": 3,
+    "retryDelay": 2000
+  },
+  "syncInterval": 60000,
+  "batchSize": 100,
+  "enableRealTime": true,
+  "autoStart": true,
+  "fieldMapping": {
+    "employeeId": "deviceUserId",
+    "timestamp": "recordTime",
+    "type": "attendanceType",
+    "deviceId": "deviceId"
+  },
+  "logLevel": "INFO",
+  "logPath": "./logs/",
+  "backupPath": "./backup/",
+  "serviceName": "ZKTeco-K50-HRM-Service",
+  "serviceDescription": "ZKTeco K50 to HRM Integration Service"
+}

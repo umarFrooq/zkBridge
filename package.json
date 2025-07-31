@@ -1,0 +1,28 @@
+{
+  "name": "zkteco-k50-service",
+  "version": "1.0.0",
+  "description": "ZKTeco K50 Attendance Service",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "build": "pkg . --out-path dist",
+    "build-win": "pkg . --targets node18-win-x64 --out-path dist",
+    "build-all": "pkg . --targets node18-win-x64,node18-linux-x64 --out-path dist",
+    "install-service": "node install-service.js install",
+    "uninstall-service": "node install-service.js uninstall"
+  },
+  "pkg": {
+    "scripts": ["main.js", "zkteco-k50-client.js"],
+    "assets": ["config.json", "package.json"]
+  },
+  "dependencies": {
+    "zklib": "^0.2.11",
+    "axios": "^1.6.0",
+    "node-windows": "^1.0.0-beta.8",
+    "pkg": "^5.8.1"
+  },
+  "devDependencies": {},
+  "keywords": ["zkteco", "attendance", "biometric", "k50"],
+  "author": "Your Name",
+  "license": "MIT"
+}
