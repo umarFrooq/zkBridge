@@ -1,12 +1,12 @@
-const ZKTecoK50Client = require('./zkteco-k50-client');
+const ZKTecoClient = require('./zkteco-client');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-class K50HRMIntegration {
+class ZKTecoHRMIntegration {
     constructor() {
         this.config = this.loadConfig();
-        this.client = new ZKTecoK50Client(this.config.deviceIP, this.config.devicePort, this.config.deviceTimeout);
+        this.client = new ZKTecoClient(this.config.deviceIP, this.config.devicePort, this.config.deviceTimeout);
         this.isRunning = false;
         this.syncIntervalId = null;
         this.lastSyncTime = new Date(0); // Initialize to epoch
@@ -17,8 +17,8 @@ class K50HRMIntegration {
         if (!fs.existsSync(this.logPath)) {
             fs.mkdirSync(this.logPath, { recursive: true });
         }
-        this.logFile = path.join(this.logPath, 'k50-hrm-service.log');
-        this.log('INFO', 'K50-HRM Integration service initialized.');
+        this.logFile = path.join(this.logPath, 'zkteco-hrm-service.log');
+        this.log('INFO', 'ZKTeco-HRM Integration service initialized.');
     }
 
     loadConfig() {
@@ -187,7 +187,7 @@ class K50HRMIntegration {
 
 // Main execution block
 (async () => {
-    const integration = new K50HRMIntegration();
+    const integration = new ZKTecoHRMIntegration();
 
     if (integration.config.autoStart) {
         await integration.start();

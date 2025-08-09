@@ -1,6 +1,6 @@
 const ZKLib = require('zklib');
 
-class ZKTecoK50Client {
+class ZKTecoClient {
     constructor(ip, port = 4370, timeout = 5000) {
         this.ip = ip;
         this.port = port;
@@ -96,4 +96,4 @@ class ZKTecoK50Client {
     }
 }
 
-module.exports = ZKTecoK50Client;
+module.exports = ZKTecoClient;

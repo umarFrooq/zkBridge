@@ -27,6 +27,6 @@
   "logLevel": "INFO",
   "logPath": "./logs/",
   "backupPath": "./backup/",
-  "serviceName": "ZKTeco-K50-HRM-Service",
-  "serviceDescription": "ZKTeco K50 to HRM Integration Service"
+  "serviceName": "ZKTeco-HRM-Service",
+  "serviceDescription": "ZKTeco to HRM Integration Service"
 }

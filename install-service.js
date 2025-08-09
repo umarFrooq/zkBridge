@@ -15,8 +15,8 @@ try {
 
 // Create a new service object
 const svc = new Service({
- name: config.serviceName || 'ZKTeco K50 Service',
- description: config.serviceDescription || 'ZKTeco K50 Attendance Data Collection Service',
+    name: config.serviceName || 'ZKTeco-HRM-Service',
+    description: config.serviceDescription || 'ZKTeco to HRM Integration Service.',
  script: path.join(__dirname, 'main.js'),
  nodeOptions: [
   '--harmony',

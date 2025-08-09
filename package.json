@@ -1,7 +1,7 @@
 {
-  "name": "zkteco-k50-service",
+  "name": "zkteco-hrm-service",
   "version": "1.0.0",
-  "description": "ZKTeco K50 Attendance Service",
+  "description": "ZKTeco Attendance to HRM Integration Service",
   "main": "main.js",
   "scripts": {
     "start": "node main.js",
@@ -12,7 +12,7 @@
     "uninstall-service": "node install-service.js uninstall"
   },
   "pkg": {
-    "scripts": ["main.js", "zkteco-k50-client.js"],
+    "scripts": ["main.js", "zkteco-client.js"],
     "assets": ["config.json", "package.json"]
   },
   "dependencies": {
@@ -22,7 +22,7 @@
     "pkg": "^5.8.1"
   },
   "devDependencies": {},
-  "keywords": ["zkteco", "attendance", "biometric", "k50"],
+  "keywords": ["zkteco", "attendance", "biometric", "hrm"],
   "author": "Your Name",
   "license": "MIT"
 }
