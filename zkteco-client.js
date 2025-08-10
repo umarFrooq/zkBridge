@@ -6,14 +6,37 @@ class ZKTecoClient {
         this.port = port;
         this.timeout = timeout;
         this.zkInstance = null;
+        console.log("ZKTecoClient constructor called with:", ip, port, timeout);
     }
-
+    
     async connect() {
         try {
-            this.zkInstance = new ZKLib(this.ip, this.port, this.timeout, 4000);
-            await this.zkInstance.createSocket();
-            console.log(`Successfully connected to ZKTeco device at ${this.ip}`);
-            return true;
+            console.log("connection---------", this.ip, this.port);
+            
+            // Correct zklib initialization based on official documentation
+            this.zkInstance = new ZKLib({
+                ip: this.ip,
+                port: this.port,
+                inport: 5200, // This is required by zklib
+                timeout: this.timeout,
+                attendanceParser: 'legacy', // String value, not object property
+                connectionType: 'udp'
+            });
+            
+            // Connect using callback-based method
+            return new Promise((resolve, reject) => {
+                this.zkInstance.connect((err) => {
+                    if (err) {
+                        console.error(`Failed to connect to ZKTeco device at ${this.ip}:`, err);
+                        this.zkInstance = null;
+                        reject(err);
+                    } else {
+                        console.log(`Successfully connected to ZKTeco device at ${this.ip}`);
+                        resolve(true);
+                    }
+                });
+            });
+            
         } catch (error) {
             console.error(`Failed to connect to ZKTeco device at ${this.ip}:`, error.message);
             this.zkInstance = null;
@@ -23,9 +46,18 @@ class ZKTecoClient {
 
     async disconnect() {
         if (this.zkInstance) {
-            await this.zkInstance.disconnect();
-            console.log(`Disconnected from ZKTeco device at ${this.ip}`);
-            this.zkInstance = null;
+            try {
+                return new Promise((resolve) => {
+                    this.zkInstance.disconnect(() => {
+                        console.log(`Disconnected from ZKTeco device at ${this.ip}`);
+                        this.zkInstance = null;
+                        resolve();
+                    });
+                });
+            } catch (error) {
+                console.error(`Error during disconnection:`, error.message);
+                this.zkInstance = null;
+            }
         }
     }
 
@@ -35,18 +67,27 @@ class ZKTecoClient {
             return [];
         }
         try {
-            const result = await this.zkInstance.getAttendances();
-            // The data structure can vary. Handle both object with 'data' and direct array.
-            if (result && result.data && Array.isArray(result.data)) {
-                console.log(`Found ${result.data.length} attendance records.`);
-                return result.data;
-            }
-            if (Array.isArray(result)) {
-                console.log(`Found ${result.length} attendance records.`);
-                return result;
-            }
-            console.warn('Attendance data received in an unexpected format:', result);
-            return [];
+            return new Promise((resolve, reject) => {
+                this.zkInstance.getAttendance((err, result) => {
+                    if (err) {
+                        console.error('Error fetching attendance records:', err);
+                        resolve([]);
+                        return;
+                    }
+                    
+                    // The data structure can vary. Handle both object with 'data' and direct array.
+                    if (result && result.data && Array.isArray(result.data)) {
+                        console.log(`Found ${result.data.length} attendance records.`);
+                        resolve(result.data);
+                    } else if (Array.isArray(result)) {
+                        console.log(`Found ${result.length} attendance records.`);
+                        resolve(result);
+                    } else {
+                        console.warn('Attendance data received in an unexpected format:', result);
+                        resolve([]);
+                    }
+                });
+            });
         } catch (error) {
             console.error('Error fetching attendance records:', error.message);
             return [];
@@ -64,7 +105,7 @@ class ZKTecoClient {
                 console.log(`Found ${result.data.length} users.`);
                 return result.data;
             }
-             if (Array.isArray(result)) {
+            if (Array.isArray(result)) {
                 console.log(`Found ${result.length} users.`);
                 return result;
             }
@@ -79,20 +120,46 @@ class ZKTecoClient {
     async clearAttendanceLog() {
         if (!this.zkInstance) {
             console.error('Not connected to ZKTeco device. Cannot clear logs.');
-            return;
+            return false;
         }
         try {
-            await this.zkInstance.clearAttendanceLog();
-            console.log('Attendance log cleared from the device.');
+            return new Promise((resolve, reject) => {
+                this.zkInstance.clearAttendanceLog((err) => {
+                    if (err) {
+                        console.error('Error clearing attendance log from the device:', err);
+                        resolve(false);
+                    } else {
+                        console.log('Attendance log cleared from the device.');
+                        resolve(true);
+                    }
+                });
+            });
         } catch (error) {
             console.error('Error clearing attendance log from the device:', error.message);
+            return false;
         }
     }
 
     isConnected() {
-        // zklib doesn't seem to have a public property for socket status,
-        // so we'll rely on our instance check.
-        return !!this.zkInstance;
+        // Check if we have an instance and if it has a socket
+        return !!(this.zkInstance && this.zkInstance.socket && !this.zkInstance.socket.destroyed);
+    }
+
+    // Additional utility method to test connection
+    async testConnection() {
+        if (!this.isConnected()) {
+            return await this.connect();
+        }
+        
+        try {
+            // Try to get device info as a connection test
+            await this.zkInstance.getInfo();
+            return true;
+        } catch (error) {
+            console.error('Connection test failed:', error.message);
+            this.zkInstance = null;
+            return false;
+        }
     }
 }
 

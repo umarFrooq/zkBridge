@@ -1,12 +1,12 @@
 {
-  "deviceIP": "192.168.1.100",
+  "deviceIP": "192.168.18.201",
   "devicePort": 4370,
   "deviceTimeout": 5000,
   "hrmServer": {
-    "baseURL": "https://your-hrm-server.com/api",
+    "baseURL": "http://localhost:4000/v1",
     "apiKey": "your-api-key-here",
     "endpoints": {
-      "attendance": "/attendance",
+      "attendance": "/checkin/machine-checkin",
       "employees": "/employees",
       "sync": "/sync"
     },

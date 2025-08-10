@@ -6,7 +6,7 @@ const path = require('path');
 class ZKTecoHRMIntegration {
     constructor() {
         this.config = this.loadConfig();
-        this.client = new ZKTecoClient(this.config.deviceIP, this.config.devicePort, this.config.deviceTimeout);
+        this.client = new ZKTecoClient("192.168.18.201", 4370, 700000);
         this.isRunning = false;
         this.syncIntervalId = null;
         this.lastSyncTime = new Date(0); // Initialize to epoch
@@ -86,13 +86,13 @@ class ZKTecoHRMIntegration {
         try {
             const attendances = await this.client.getAttendances();
             this.log('INFO', `Retrieved ${attendances.length} total records from the device.`);
-
+console.log("attendences--------",attendances)
             const newRecords = attendances.filter(record => {
                 const recordTime = new Date(record.recordTime);
                 const recordId = this.getRecordId(record);
                 return recordTime > this.lastSyncTime && !this.processedRecordIds.has(recordId);
             });
-
+console.log("new Record",newRecords)
             if (newRecords.length === 0) {
                 this.log('INFO', 'No new attendance records to sync.');
                 return;
@@ -143,7 +143,7 @@ class ZKTecoHRMIntegration {
         for (const hrmField in fieldMapping) {
             const configField = fieldMapping[hrmField];
             if (configField === 'deviceId') {
-                mapped[hrmField] = this.config.deviceIP;
+                mapped[hrmField] = "192.168.18.201";
             } else {
                 const zklibField = Object.keys(zklibToConfigMap).find(k => zklibToConfigMap[k] === configField);
                 if (record[zklibField] !== undefined) {
@@ -159,9 +159,9 @@ class ZKTecoHRMIntegration {
         const url = `${hrmServer.baseURL}${hrmServer.endpoints.attendance}`;
         const headers = {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${hrmServer.apiKey}`
+            // 'Authorization': `Bearer ${hrmServer.apiKey}`
         };
-
+console.log(records)
         for (let attempt = 1; attempt <= hrmServer.retryAttempts; attempt++) {
             try {
                 this.log('INFO', `Sending ${records.length} records to HRM server (Attempt ${attempt})...`);
