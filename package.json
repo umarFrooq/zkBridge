@@ -1,0 +1,16 @@
+{
+  "name": "zkbridge",
+  "version": "1.0.0",
+  "description": "A TCP listener to bridge ZKTeco devices to a REST API.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "dotenv": "^17.2.1",
+    "net": "^1.0.2"
+  },
+  "author": "",
+  "license": "ISC"
+}
