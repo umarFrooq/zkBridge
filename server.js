@@ -64,16 +64,23 @@ const server = net.createServer((socket) => {
                 try {
                     const apiPayload = {
                         SN: record.sn,
-                        scan_time: record.timestamp,
-                        employee_code: record.uid,
-                        ip: deviceIP
+                        punch_time: record.timestamp,
+                        emp_code: record.uid,
+                        device_id: deviceIP,
+                        punch_state:record.status
                     };
                     console.log("Forwarding to API:", apiPayload);
-                    const res = await axios.post(API_URL, apiPayload);
-                    console.log(`API response for UID ${record.uid}:`, res.status);
+const res = await axios.post(API_URL, apiPayload, {
+  headers: {
+    "api-key": process.env.LAMBDA_KEY,  // pass your secret key here
+  },
+});                    console.log(`API response for UID ${record.uid}:`, res.status);
                 } catch (err) {
                     const errorMessage = err.response ? JSON.stringify(err.response.data) : err.message;
-                    console.error(`Error forwarding UID ${record.uid} to API:`, errorMessage);
+                    console.error(`Error for
+                        
+                        
+                        warding UID ${record.uid} to API:`, errorMessage);
                 }
             }
         } else if (requestUrl.startsWith('/iclock/cdata')) {
@@ -116,8 +123,8 @@ function testZKTecoServer() {
             "Content-Type: text/plain\r\n" +
             "Content-Length: 58\r\n" +
             "\r\n" +
-            "1001\t2024-01-15 09:30:00\t1\t1\r\n" +
-            "1002\t2024-01-15 09:31:00\t0\t1\r\n";
+            "0601\t2024-01-15 09:30:00\t1\t1\r\n" +
+            "120\t2024-01-15 09:31:00\t0\t1\r\n";
         
         client.write(testData);
         console.log('Sent test attendance data');
